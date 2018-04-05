@@ -62,8 +62,13 @@ function Ludwig:GetItemName(id, ...)
     return name
 end
 
-function Ludwig:GetItems(...)
-    local items = getItems(self, ...)
+function Ludwig:GetItems(name, quality, typefilters, minLevel, maxLevel)
+    -- disable sorting if no filter set
+    if not (name or quality or (typefilters and next(typefilters) ~= nil) or minLevel or maxLevel) then
+        Ludwig.pawnSort = false
+    end
+
+    local items = getItems(self, name, quality, typefilters, minLevel, maxLevel)
 
     if PawnGetItemData and Ludwig.pawnSort then
         local pval

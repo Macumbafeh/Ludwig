@@ -23,7 +23,7 @@
         <Scripts>
             <OnEnter>
                     GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
-                    GameTooltip:SetText("Enable sorting by Pawn values")
+                    GameTooltip:SetText("Enable sorting by Pawn values.\nSet any filter first!")
                     GameTooltip:Show()
             </OnEnter>
             <OnLeave>GameTooltip:Hide()</OnLeave>
