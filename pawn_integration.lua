@@ -19,6 +19,8 @@ local lwSlashHandler = SlashCmdList["LudwigSlashCOMMAND"]
 local getItemName = Ludwig.GetItemName
 local getItems = Ludwig.GetItems
 
+local pawnTooltipAnnotation = " |cff8ec3e6(*)"
+
 local function LMsg(msg)
     ChatFrame1:AddMessage(format("|cFF00EE00Ludwig|r: %s", tostring(msg)))
 end
@@ -52,15 +54,20 @@ SlashCmdList["LudwigSlashCOMMAND"] = function(msg)
     end
 end
 
-
 function Ludwig:GetItemName(id, ...)
     local name = getItemName(self, id, ...)
 
     if PawnGetItemData and Ludwig.pawnSort then
-        local pval = PawnGetSingleValueFromItem(PawnGetItemData(Ludwig:GetItemLink(id)), Ludwig.pawnScaleName)
+        local itemData = PawnGetItemData(Ludwig:GetItemLink(id))
+        local pval = PawnGetSingleValueFromItem(itemData, Ludwig.pawnScaleName)
+
         if pval then
             pval = string.format("%." .. PawnOptions.Digits .. "f", pval)
-            return name .. " " .. (pval or "")
+            name = name .. " " .. (pval or "")
+        end
+
+        if itemData.UnknownLines then
+            name = name .. pawnTooltipAnnotation
         end
     end
 
