@@ -334,6 +334,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+							self.UpdateTooltip = LudwigUI_OnTypeEnter
+					</OnLoad>
+					<OnEnter>
+							LudwigUI_OnTypeEnter(self)
+					</OnEnter>
+					<OnLeave>
+							LudwigUI_OnItemLeave(self)
+					</OnLeave>
 					<OnShow>
 						LudwigUI_OnTypeShow(self)
 					</OnShow>

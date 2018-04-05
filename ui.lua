@@ -120,7 +120,7 @@ end
 function LudwigUI_UpdateList(changed)
 	--update list only if there are changes
 	if not display or changed then
-		display = Ludwig:GetItems(filter.name, filter.quality, filter.type, filter.subType, filter.equipLoc, filter.minLevel, filter.maxLevel)
+		display = Ludwig:GetItems(filter.name, filter.quality, filter.type, filter.minLevel, filter.maxLevel)
 	end
 
 	local size = #display
@@ -191,16 +191,18 @@ end
 
 --[[ Dropdowns ]]--
 
+local selectedFilter
 local info = {}
 local function AddItem(text, value, func, hasArrow, level, arg1, arg2)
 	info.text = text
 	info.func = func
 	info.value = value
 	info.hasArrow = (hasArrow and true) or nil
-	info.notCheckable = true
-	info.checked = false
 	info.arg1 = arg1
 	info.arg2 = arg2
+	info.keepShownOnClick = true
+	local ft = filter and filter.type and filter.type[selectedFilter]
+	info.checked = ft ~= nil
 	UIDropDownMenu_AddButton(info, level)
 end
 
@@ -227,9 +229,9 @@ end
 
 --add all buttons to the dropdown menu
 local function Quality_Initialize()
-	AddItem(ALL, ALL, Quality_OnClick)
+	UIDropDownMenu_AddButton { text = ALL, value = ALL, func = Quality_OnClick }
 	for i = 6, 0, -1 do
-		AddItem(Quality_GetText(i), i, Quality_OnClick)
+		UIDropDownMenu_AddButton { text = Quality_GetText(i), value = i, func = Quality_OnClick }
 	end
 end
 
@@ -247,39 +249,46 @@ end
 --[[ Type ]]--
 
 local function Type_OnClick(type, subType)
-	filter.type = nil
-	filter.subType = nil
-	filter.equipLoc = nil
+	if filter.type == nil then
+		filter.type = {}
+	end
+	local f = {}
 
 	if not type then
 		if this.value == ALL then
-			filter.type = nil
+			filter.type = {}
 		else
-			filter.type = select(this.value, GetAuctionItemClasses())
+			f.type = select(this.value, GetAuctionItemClasses())
+			filter.type[f.type] = this.checked and f or nil
 		end
 	else
-		filter.type = select(type, GetAuctionItemClasses())
+		f.type = select(type, GetAuctionItemClasses())
 		if not subType then
-			filter.subType = select(this.value, GetAuctionItemSubClasses(type))
+			f.subType = select(this.value, GetAuctionItemSubClasses(type))
+			filter.type[f.type .. "/" .. f.subType] = this.checked and f or nil
 		else
-			filter.subType = select(subType, GetAuctionItemSubClasses(type))
-			filter.equipLoc = select(this.value, GetAuctionInvTypes(type, subType))
+			f.subType = select(subType, GetAuctionItemSubClasses(type))
+			f.equipLoc = select(this.value, GetAuctionInvTypes(type, subType))
+			filter.type[f.type .. "/" .. f.subType .. "/" .. f.equipLoc] = this.checked and f or nil
 		end
 	end
 
 	LudwigUI_UpdateTypeText()
 	LudwigUI_UpdateList(true)
 
+--[[ No need to close menus.
 	--hack to hide the previous dropdown menu levels
 	for i = 1, UIDROPDOWNMENU_MENU_LEVEL - 1 do
 		getglobal('DropDownList'..i):Hide()
 	end
+]]
 end
 
 local function AddTypes(level, ...)
-	AddItem(ALL, ALL, Type_OnClick)
+	UIDropDownMenu_AddButton { text = ALL, value = ALL, func = Type_OnClick }
 	for i = 1, select('#', ...) do
 		local hasSubTypes = GetAuctionItemSubClasses(i)
+		selectedFilter = select(i, ...)
 		AddItem(select(i, ...), i, Type_OnClick, hasSubTypes, level)
 	end
 end
@@ -287,6 +296,7 @@ end
 local function AddSubTypes(level, type, ...)
 	for i = 1, select('#', ...) do
 		local hasInvTypes = GetAuctionInvTypes(type, i)
+		selectedFilter = select(type, GetAuctionItemClasses()) .. "/" .. select(i, ...)
 		AddItem(select(i, ...), i, Type_OnClick, hasInvTypes, level, type)
 	end
 end
@@ -295,6 +305,8 @@ local function AddEquipLocations(level, type, subType, ...)
 	for i = 1, select('#', ...), 2 do
 		local equipLoc, used = select(i, ...)
 		if used then
+			selectedFilter = select(type, GetAuctionItemClasses()) .. "/"
+					.. select(subType, GetAuctionItemSubClasses(type)) .. "/" .. equipLoc
 			AddItem(getglobal(equipLoc), i, Type_OnClick, false, level, type, subType)
 		end
 	end
@@ -315,19 +327,17 @@ local function Type_Initialize(level)
 end
 
 function LudwigUI_UpdateTypeText()
-	local text
+	local text, tmp
 	if filter.type then
-		if filter.subType then
-			text = format('%s - %s', filter.type, filter.subType)
-			if filter.equipLoc then
-				text = format('%s - %s', filter.subType, getglobal(filter.equipLoc))
+		for _, v in pairs(filter.type) do
+			if v then
+				tmp = v.type .. (v.subType and ("/" .. v.subType .. (v.equipLoc and "/" .. getglobal(v.equipLoc) or "")) or "")
+				text = text == nil and tmp or text .. ", " .. tmp
 			end
-		else
-			text = filter.type
 		end
-	else
-		text = ALL
 	end
+
+	text = text or ALL
 	getglobal(uiFrame.type:GetName() .. 'Text'):SetText(text)
 end
 
@@ -336,3 +346,10 @@ function LudwigUI_OnTypeShow(self)
 	UIDropDownMenu_SetWidth(200, self)
 	LudwigUI_UpdateTypeText()
 end
+
+function LudwigUI_OnTypeEnter(self)
+	GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
+	GameTooltip:SetText(getglobal(uiFrame.type:GetName() .. 'Text'):GetText())
+	GameTooltip:Show()
+end
+

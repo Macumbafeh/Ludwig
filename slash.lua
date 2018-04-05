@@ -5,7 +5,7 @@
 	Commands:
 		/lw or /ludwig
 			start of a command, shows the UI if its enabled
-		/lw -refresh
+		/lw --refresh
 			resets the database
 		/lw <name>
 			prints a list of items matching <name>
