@@ -29,6 +29,11 @@ In addition of standard Ludwig features:
 - `/lw --pawn|<scale name>` – Sorts list of items by Pawn's values.
 - `/lw --pawn` – Disables sorting.
 
+## Useful addons
+- **LootDB** – adds loot information to the standard item tooltips: 
+[official](https://www.wowace.com/projects/loot-db), [fan update](https://github.com/1nf3sT/LootDB) (recommend).
+
+
 ## Known Issues
 - Unfortunately, required version of Pawn works with English localisation only.
 - Some items cannot be fully valued by Pawn and marked with an asterisk as Pawn does.
