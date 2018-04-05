@@ -66,7 +66,7 @@
             <OnShow>
                     local function ScaleSelect()
                         local scale_name = this:GetText()
-                        UIDropDownMenu_SetSelectedName(LudwigPawnCurrentScaleDropDown, scale_name)
+                        UIDropDownMenu_SetSelectedName(self, scale_name)
                         Ludwig.pawnSort = true
                         Ludwig.pawnScaleName = scale_name
                         LudwigUI_UpdateList(true)
@@ -79,6 +79,11 @@
                         end
                     end)
             </OnShow>
+            <OnUpdate>
+                    if self.selectedName ~= Ludwig.pawnScaleName then
+                        UIDropDownMenu_SetSelectedName(self, Ludwig.pawnScaleName)
+                    end
+            </OnUpdate>
         </Scripts>
     </Button>
 </Ui>

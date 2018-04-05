@@ -34,9 +34,14 @@ SlashCmdList["LudwigSlashCOMMAND"] = function(msg)
 
         local scale_name = msg:match("||(.*)")
         if scale_name then
-            Ludwig.pawnSort = true
-            Ludwig.pawnScaleName = scale_name
-            LMsg("Pawn sorting enabled (" .. scale_name .. ")")
+            if not PawnOptions.Scales[scale_name] then
+                Ludwig.pawnSort = false
+                LMsg("Pawn scale not found: " .. scale_name)
+            else
+                Ludwig.pawnSort = true
+                Ludwig.pawnScaleName = scale_name
+                LMsg("Pawn sorting enabled (" .. scale_name .. ")")
+            end
         else
             Ludwig.pawnSort = false
             LMsg("Pawn sorting disabled")
