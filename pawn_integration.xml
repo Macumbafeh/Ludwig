@@ -28,16 +28,19 @@
             </OnEnter>
             <OnLeave>GameTooltip:Hide()</OnLeave>
             <OnClick>
-                    if LudwigPawnCurrentScaleDropDown:IsVisible() then
-                        LudwigPawnCurrentScaleDropDown:Hide()
-                        Ludwig.pawnSort = false
-                    else
-                        LudwigPawnCurrentScaleDropDown:Show()
-                        Ludwig.pawnSort = true
-                    end
+                    Ludwig.pawnSort = not Ludwig.pawnSort
                     LudwigUI_UpdateList(true)
 
             </OnClick>
+            <OnUpdate>
+                    if Ludwig.pawnSort ~= LudwigPawnCurrentScaleDropDown:IsVisible() then
+                        if Ludwig.pawnSort then
+                            LudwigPawnCurrentScaleDropDown:Show()
+                        else
+                            LudwigPawnCurrentScaleDropDown:Hide()
+                        end
+                    end
+            </OnUpdate>
         </Scripts>
     </Button>
 
