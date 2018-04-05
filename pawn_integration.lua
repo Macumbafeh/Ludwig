@@ -16,10 +16,9 @@
  ]]
 
 local lwSlashHandler = SlashCmdList["LudwigSlashCOMMAND"]
-local getItemName = Ludwig.GetItemName
 local getItems = Ludwig.GetItems
 
-local pawnTooltipAnnotation = " |cff8ec3e6(*)"
+local pawnTooltipAnnotation = "|cff8ec3e6(*)|r "
 
 local function LMsg(msg)
     ChatFrame1:AddMessage(format("|cFF00EE00Ludwig|r: %s", tostring(msg)))
@@ -54,24 +53,37 @@ SlashCmdList["LudwigSlashCOMMAND"] = function(msg)
     end
 end
 
-function Ludwig:GetItemName(id, ...)
-    local name = getItemName(self, id, ...)
+-- Add right justified label to items
+do
+    local function setID(button, id)
+        if PawnGetItemData and Ludwig.pawnSort then
+            local text = ''
+            local itemData = PawnGetItemData(Ludwig:GetItemLink(id))
+            local pval = PawnGetSingleValueFromItem(itemData, Ludwig.pawnScaleName)
 
-    if PawnGetItemData and Ludwig.pawnSort then
-        local itemData = PawnGetItemData(Ludwig:GetItemLink(id))
-        local pval = PawnGetSingleValueFromItem(itemData, Ludwig.pawnScaleName)
+            if pval then
+                pval = string.format("%." .. PawnOptions.Digits .. "f", pval)
+                text = pval or ''
+            end
 
-        if pval then
-            pval = string.format("%." .. PawnOptions.Digits .. "f", pval)
-            name = name .. " " .. (pval or "")
-        end
-
-        if itemData.UnknownLines then
-            name = name .. pawnTooltipAnnotation
+            if itemData.UnknownLines then
+                text = pawnTooltipAnnotation .. text
+            end
+            button.RightText:SetText(text)
+        else
+            button.RightText:SetText('')
         end
     end
 
-    return name
+    local rtext
+    for _, button in ipairs(LudwigFrame.items) do
+        rtext = button:CreateFontString(button:GetName() .. 'RightText')
+        rtext:SetPoint('RIGHT', -4, 0);
+        rtext:SetJustifyH('RIGHT')
+        rtext:SetFont(button:GetFont())
+        button.RightText = rtext
+        hooksecurefunc(button, 'SetID', setID)
+    end
 end
 
 function Ludwig:GetItems(name, quality, typefilters, minLevel, maxLevel)
