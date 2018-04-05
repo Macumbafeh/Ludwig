@@ -8,4 +8,4 @@ db.lua
 slash.lua
 linkerator.lua
 ui.xml
-pawn_integration.lua
+pawn_integration.xml

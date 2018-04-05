@@ -2,12 +2,12 @@
     Pawn integration for Ludwig. It shows Pawn values in LW list and sorts by them.
     Install:
         1. Ludwig and Pawn addons required.
-        2. Copy pawn_integration.lua file to "WoW\Interface\AddOns\Ludwig" directory.
-        3. Append line "pawn_integration.lua" (without quotes) to the end of "WoW\Interface\AddOns\Ludwig\Ludwig.toc"
+        2. Copy pawn_integration.lua and pawn_integration.xml files to "WoW\Interface\AddOns\Ludwig" directory.
+        3. Append line "pawn_integration.xml" (without quotes) to the end of "WoW\Interface\AddOns\Ludwig\Ludwig.toc"
            file using any text editor.
     Tested with Ludwig  1.6.0 and Pawn 1.1.2 for WoW 2.4.3.
     Author: Dawer
-    Version: v0.1.0-alpha
+    Version: v0.2.0-beta
 	Commands:
 		/lw --pawn|Scale name
             Sorts by Pawn's scale values.

@@ -341,7 +341,7 @@
 							LudwigUI_OnTypeEnter(self)
 					</OnEnter>
 					<OnLeave>
-							LudwigUI_OnItemLeave(self)
+							GameTooltip:Hide()
 					</OnLeave>
 					<OnShow>
 						LudwigUI_OnTypeShow(self)
