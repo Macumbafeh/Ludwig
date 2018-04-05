@@ -19,6 +19,7 @@ local lwSlashHandler = SlashCmdList["LudwigSlashCOMMAND"]
 local getItems = Ludwig.GetItems
 
 local pawnTooltipAnnotation = "|cff8ec3e6(*)|r "
+local pawnCache, underestimatedCache = {}, {}
 
 local function LMsg(msg)
     ChatFrame1:AddMessage(format("|cFF00EE00Ludwig|r: %s", tostring(msg)))
@@ -58,15 +59,14 @@ do
     local function setID(button, id)
         if PawnGetItemData and Ludwig.pawnSort then
             local text = ''
-            local itemData = PawnGetItemData(Ludwig:GetItemLink(id))
-            local pval = PawnGetSingleValueFromItem(itemData, Ludwig.pawnScaleName)
+            local pval = pawnCache[id]
 
             if pval then
                 pval = string.format("%." .. PawnOptions.Digits .. "f", pval)
                 text = pval or ''
             end
 
-            if itemData.UnknownLines then
+            if underestimatedCache[id] then
                 text = pawnTooltipAnnotation .. text
             end
             button.RightText:SetText(text)
@@ -95,14 +95,19 @@ function Ludwig:GetItems(name, quality, typefilters, minLevel, maxLevel)
     local items = getItems(self, name, quality, typefilters, minLevel, maxLevel)
 
     if PawnGetItemData and Ludwig.pawnSort then
-        local pval
-        local pawnCache = {}
-
         -- cache Pawn values
+        local itemData, pval
+        pawnCache = {}
+        underestimatedCache = {}
         for _, id in pairs(items) do
-            pval = PawnGetSingleValueFromItem(PawnGetItemData(Ludwig:GetItemLink(id)), Ludwig.pawnScaleName)
+            itemData = PawnGetItemData(Ludwig:GetItemLink(id))
+            pval = PawnGetSingleValueFromItem(itemData, Ludwig.pawnScaleName)
             if pval then
                 pawnCache[id] = pval
+            end
+
+            if itemData.UnknownLines then
+                underestimatedCache[id] = itemData.UnknownLines
             end
         end
 
