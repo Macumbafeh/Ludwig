@@ -7,7 +7,7 @@
            file using any text editor.
     Tested with Ludwig  1.6.0 and Pawn 1.1.2 for WoW 2.4.3.
     Author: Dawer
-    Version: v0.2.0-beta
+    Version: 0.2.0-beta
 	Commands:
 		/lw --pawn|Scale name
             Sorts by Pawn's scale values.
