@@ -229,3 +229,5 @@ end
 function Ludwig:ReloadDB()
 	self:GetAllItems(true)
 end
+
+Ludwig.SortByEverything = SortByEverything

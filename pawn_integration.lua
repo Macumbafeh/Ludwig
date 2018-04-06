@@ -137,11 +137,14 @@ function Ludwig:GetItems(name, quality, typefilters, minLevel, maxLevel)
         end
 
         table.sort(items, function(id1, id2)
-            local pval1 = pawnCache[id1] or 0
-            local pval2 = pawnCache[id2] or 0
-            if pval1 ~= pval2 then
-                return pval1 > pval2
+            local pval1 = pawnCache[id1]
+            local pval2 = pawnCache[id2]
+
+            if pval1 == pval2 then
+                return Ludwig.SortByEverything(id1, id2)
             end
+
+            return (pval1 or 0) > (pval2 or 0)
         end)
     end
 
