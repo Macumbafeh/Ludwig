@@ -109,10 +109,10 @@ function Ludwig:GetAllItems(refresh)
 	return db
 end
 
-function Ludwig:GetItems(name, quality, type, subType, equipLoc, minLevel, maxLevel)
+function Ludwig:GetItems(name, quality, typefilters, minLevel, maxLevel)
 	local db = self:GetAllItems()
 	local stats = itemInfo
-	local search
+	local search, addItem, addItemByType
 
 	if name and name ~= '' then
 		name = name:lower()
@@ -135,18 +135,14 @@ function Ludwig:GetItems(name, quality, type, subType, equipLoc, minLevel, maxLe
 	local count = 0
 
 	for id, itemName in pairs(db) do
-		local addItem = true
+		addItem = true
+		addItemByType = true
+
 		if quality and stats[3][id] ~= quality then
 			addItem = nil
 		elseif minLevel and stats[5][id] < minLevel then
 			addItem = nil
 		elseif maxLevel and stats[5][id] > maxLevel then
-			addItem = nil
-		elseif type and stats[6][id] ~= type then
-			addItem = nil
-		elseif subType and stats[7][id] ~= subType then
-			addItem = nil
-		elseif equipLoc and stats[9][id] ~= equipLoc then
 			addItem = nil
 		elseif name then
 			if not(name == itemName or itemName:find(search)) then
@@ -154,7 +150,26 @@ function Ludwig:GetItems(name, quality, type, subType, equipLoc, minLevel, maxLe
 			end
 		end
 
-		if addItem then
+		if typefilters then
+			local type, subType, equipLoc
+			for _,filter in pairs(typefilters) do
+				type, subType, equipLoc = filter.type, filter.subType, filter.equipLoc
+				if filter then
+					addItemByType = true
+					if type and stats[6][id] ~= type then
+						addItemByType = nil
+					elseif subType and stats[7][id] ~= subType then
+						addItemByType = nil
+					elseif equipLoc and stats[9][id] ~= equipLoc then
+						addItemByType = nil
+					else
+						break
+					end
+				end
+			end
+		end
+
+		if addItem and addItemByType then
 			count = count + 1
 			filteredList[count] = id
 		end
@@ -214,3 +229,5 @@ end
 function Ludwig:ReloadDB()
 	self:GetAllItems(true)
 end
+
+Ludwig.SortByEverything = SortByEverything

@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="pawn_integration.lua"/>
+
+    <Button name="LudwigPawnButton" parent="LudwigFrame" inherits="UIPanelButtonTemplate">
+        <Size>
+            <AbsDimension x="48" y="24"/>
+        </Size>
+        <NormalTexture file="Interface\AddOns\Pawn\Textures\PawnButton">
+            <TexCoords left="0" top="0" right=".5" bottom="0.5"/>
+        </NormalTexture>
+        <PushedTexture file="Interface\AddOns\Pawn\Textures\PawnButton">
+            <TexCoords left="0" top="0.5" right=".5" bottom="1"/>
+        </PushedTexture>
+        <DisabledTexture file="Interface\AddOns\Pawn\Textures\PawnButton">
+            <TexCoords left="0.5" top="0.5" right="1" bottom="1"/>
+        </DisabledTexture>
+        <HighlightTexture file="Interface\AddOns\Pawn\Textures\PawnButton" alphaMode="ADD">
+            <TexCoords left=".5" top="0" right="1" bottom="0.5"/>
+        </HighlightTexture>
+        <Anchors>
+            <Anchor point="RIGHT" relativeTo="LudwigFrameCloseButton" relativePoint="LEFT"/>
+        </Anchors>
+        <Scripts>
+            <OnEnter>
+                    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
+                    GameTooltip:SetText("Enable sorting by Pawn values.\nSet any filter first!")
+                    GameTooltip:Show()
+            </OnEnter>
+            <OnLeave>GameTooltip:Hide()</OnLeave>
+            <OnClick>
+                    Ludwig.pawnSort = not Ludwig.pawnSort
+                    LudwigUI_UpdateList(true)
+
+            </OnClick>
+            <OnUpdate>
+                    if Ludwig.pawnSort ~= LudwigPawnCurrentScaleDropDown:IsVisible() then
+                        if Ludwig.pawnSort then
+                            LudwigPawnCurrentScaleDropDown:Show()
+                        else
+                            LudwigPawnCurrentScaleDropDown:Hide()
+                        end
+                    end
+            </OnUpdate>
+        </Scripts>
+    </Button>
+
+    <Button name="LudwigPawnCurrentScaleDropDown" hidden="true" inherits="UIDropDownMenuTemplate"
+            text="PawnUIFrame_CurrentScaleDropDown_Text" parent="LudwigPawnButton">
+        <Size>
+            <AbsDimension x="150" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOMRIGHT" relativeTo="LudwigPawnButton" relativePoint="TOPRIGHT">
+                <Offset>
+                    <AbsDimension y="-5"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+            <OnEnter>
+                    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
+                    GameTooltip:SetText("Select Pawn scale.")
+                    GameTooltip:Show()
+            </OnEnter>
+            <OnLeave>GameTooltip:Hide()</OnLeave>
+            <OnShow>
+                    local function ScaleSelect()
+                        local scale_name = this:GetText()
+                        UIDropDownMenu_SetSelectedName(self, scale_name)
+                        Ludwig.pawnSort = true
+                        Ludwig.pawnScaleName = scale_name
+                        LudwigUI_UpdateList(true)
+                    end
+
+                    UIDropDownMenu_Initialize(self, function()
+                        -- Add each scale to the dropdown.
+                        for _, scaleName in pairs(PawnGetAllScales()) do
+                            UIDropDownMenu_AddButton { func = ScaleSelect, text = scaleName }
+                        end
+                    end)
+            </OnShow>
+            <OnUpdate>
+                    if self.selectedName ~= Ludwig.pawnScaleName then
+                        UIDropDownMenu_SetSelectedName(self, Ludwig.pawnScaleName)
+                    end
+            </OnUpdate>
+        </Scripts>
+    </Button>
+</Ui>
