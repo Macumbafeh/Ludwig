@@ -1,7 +1,9 @@
 # Ludwig with Pawn integrated
 A BiS (best in slot) list addon for World of Warcraft TBC 2.4.3 based on [Ludwig 1.6.0](https://github.com/tullamods/Ludwig).
 
-##Features
+![preview](preview.jpg)
+
+## Features
 In addition of standard Ludwig features:
 - Type filter multi-selection.
 - List sorting by Pawn values (aka BiS list).
@@ -9,7 +11,7 @@ In addition of standard Ludwig features:
 ## Getting Started
 ### Installing:
 1. Download and install [Pawn 1.1.2](http://tbcwowaddons.weebly.com/pawn.html) addon.
-1. Copy "Ludwig" directory to "WoW\Interface\AddOns\" directory.
+1. Copy "Ludwig-xxx" directory to "WoW\Interface\AddOns\" and rename it to "Ludwig".
 ### Configuring:
 1. Run WoW.
 1. Configure Pawn:
